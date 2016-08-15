@@ -26,10 +26,12 @@
 }
 ```
 
-### Value of operateType
+##### Value of operateType
+
+```
   1. group_rw_group_ro
   2. group_rw_other_ro_with_guest
   3. group_rw_other_ro_without_guest
   4. world_rw_with_guest
   5. world_rw_without_guest
-
+```
