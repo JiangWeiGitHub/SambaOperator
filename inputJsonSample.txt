@@ -1,0 +1,11 @@
+[
+"operateType":"group_rw_group_ro", //group_rw_other_ro_with_guest group_rw_other_ro_without_guest world_rw_with_guest world_rw_without_guest
+"folderName":"hello",
+"comment":"This is just a testing text.",
+"folderPath":"/etc/tmp/hello",
+"folderSwtich":"on", //off
+"defaultUser":"admin", //aaa bbb guest
+"defaultGroup":"aaa", //bbb ccc
+["validUserList":"aaa","bbb","ccc"]
+
+]
