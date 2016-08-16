@@ -7,7 +7,7 @@
   "workgroup":"WORKGROUP",
   "netbios name":"NETBIOS",
   "server string":"SERVERNAME",
-  "map to guest":"no",
+  "map to guest":"Bad User",
   "operateType":"group_rw_group_ro",
   "folderName":"hello",
   "comment":"This is just a testing text.",
