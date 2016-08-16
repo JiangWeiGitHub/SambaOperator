@@ -1,8 +1,10 @@
 const fs = require('fs');
 
+let sambaConfigPath = "/etc/samba/smb.config"
+
 function defaultSambaConfig()
 {
-  let defaultSambaConfig = 
+  let defaultSambaConfig =
   {
     "global":
     {
@@ -21,7 +23,7 @@ function defaultSambaConfig()
       "guest account":"nobody",
       "public":"yes"
     },
-    "homeFolder":
+    "homesFolder":
     {
       "comment":"Home Directory",
       "browseable":"no",
@@ -35,67 +37,133 @@ function defaultSambaConfig()
       "force user":"admin",
       "create mask":"0644",
       "directory mask":"0755"
-    }    
+    }
   }
 
   return defaultSambaConfig
 }
 
-function checkEssentialInput(inputJson, error)
+function checkInputFormat(inputJson)
 {
-  if( typeof(inputJson.operateType) != String
-  || typeof(inputJson.folderName) != String
-  || typeof(inputJson.comment) != String
-  || typeof(inputJson.folderPath) != String
-  || typeof(inputJson.folderShowSwtich) != String
-  || typeof(inputJson.defaultUser) != String
-  || typeof(inputJson.defaultGroup) != String
-  || typeof(inputJson.validUserList) != String
-  || typeof(inputJson.writeUserList) != String
-}
-
-let test = defaultSambaConfig()
-console.log(test.home)
-
-function sambaOperator(inputJson, error)
-{
-  if(inputJson.operateType
-  && inputJson.folderName
-  && inputJson.comment
-  && inputJson.folderPath
-  && inputJson.folderShowSwtich
-  && inputJson.defaultUser
-  && inputJson.defaultGroup
-  && inputJson.validUserList
-  && inputJson.writeUserList)
+  if(typeof(inputJson.workgroup) != 'string'
+  || typeof(inputJson['netbios name']) != 'string'
+  || typeof(inputJson['server string']) != 'string'
+  || typeof(inputJson['map to guest']) != 'string'
+  || typeof(inputJson.operateType) != 'string'
+  || typeof(inputJson.folderName) != 'string'
+  || typeof(inputJson.comment) != 'string'
+  || typeof(inputJson.path) != 'string'
+  || typeof(inputJson.available) != 'string'
+//  || typeof(inputJson['force users']) != 'string'
+  || typeof(inputJson['force group']) != 'string'
+  || (typeof(inputJson['valid users']) != 'object' && typeof(inputJson['valid users']) != 'string')
+  || (typeof(inputJson['write list']) != 'object' && typeof(inputJson['write list']) != 'string'))
   {
-    let inputValue = JSON.stringify(inputJson)
-    console.log(inputValue.operateType)
+    return false
   }
   else
   {
-  
+    return true
   }
-
-
 }
 
-let testSample = 
+function writeSambaConfig(inputJson)
 {
+  let tmpConfigStringTree = new String
+
+  if (checkInputFormat(inputJson))
+  {
+    let tmpSambaConfig = defaultSambaConfig()
+    tmpGlobalConfig = tmpSambaConfig.global
+    tmpHomesConfig = tmpSambaConfig.homesFolder
+    tmpShareFolderConfig = tmpSambaConfig.shareFolder
+
+    tmpGlobalConfig.workgroup = inputJson.workgroup
+    tmpGlobalConfig['netbios name'] = inputJson['netbios name']
+    tmpGlobalConfig['server string'] = inputJson['server string']
+    tmpGlobalConfig['map to guest'] = inputJson['map to guest']
+
+    tmpConfigStringTree = tmpConfigStringTree.concat("[global]\n")
+    for (let prop in tmpGlobalConfig)
+    {
+      tmpConfigStringTree = tmpConfigStringTree.concat(
+      prop + " = " + tmpGlobalConfig[prop] + "\n")
+    }
+
+    tmpConfigStringTree = tmpConfigStringTree.concat("\n[homes]\n")
+    for (let prop in tmpHomesConfig)
+    {
+      tmpConfigStringTree = tmpConfigStringTree.concat(
+      prop + " = " + tmpHomesConfig[prop] + "\n")
+    }
+
+    if(inputJson.operateType === "group_rw_group_ro")
+    {
+      tmpConfigStringTree = tmpConfigStringTree.concat("\n[" + inputJson.folderName + "]\n")
+
+      tmpShareFolderConfig['comment'] = inputJson['comment']
+      tmpShareFolderConfig['path'] = inputJson['path']
+      tmpShareFolderConfig['available'] = inputJson['available']
+      tmpShareFolderConfig['force group'] = inputJson['force group']
+      tmpShareFolderConfig['valid users'] = inputJson['valid users']
+      tmpShareFolderConfig['write list'] = inputJson['write list']
+
+      for (let prop in tmpShareFolderConfig)
+      {
+        tmpConfigStringTree = tmpConfigStringTree.concat(
+        prop + " = " + tmpShareFolderConfig[prop] + "\n")
+      }
+    }
+    else if(inputJson.operateType === "group_rw_other_ro_with_guest")
+    {
+
+    }
+    else if(inputJson.operateType === "group_rw_other_ro_without_guest")
+    {
+
+    }
+    else if(inputJson.operateType === "world_rw_with_guest")
+    {
+
+    }
+    else if(inputJson.operateType === "world_rw_without_guest")
+    {
+
+    }
+    else
+    {
+      return false
+    }
+
+console.log(tmpConfigStringTree)
+
+  }
+  else
+  {
+    return false
+  }
+}
+
+let testSample =
+{
+  "workgroup":"WORKGROUP",
+  "netbios name":"NETBIOS",
+  "server string":"SERVERNAME",
+  "map to guest":"no",
   "operateType":"group_rw_group_ro",
   "folderName":"hello",
   "comment":"This is just a testing text.",
-  "folderPath":"/etc/tmp/hello",
-  "folderShowSwtich":"on",
-  "defaultUser":"admin",
-  "defaultGroup":"aaa",
-  "validUserList":
+  "path":"/etc/tmp/hello",
+  "available":"on",
+//  "force users":"admin",
+  "force group":"aaa",
+  "valid users":
   [
     "aaa",
     "bbb",
     "ccc"
   ],
-  "writeUserList":
+  "write list":
   [
     "aaa",
     "bbb",
@@ -103,4 +171,9 @@ let testSample =
   ]
 }
 
-sambaOperator(testSample)
+writeSambaConfig(testSample)
+
+//export
+//{
+//  writeSambaConfig
+//}
