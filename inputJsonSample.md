@@ -11,17 +11,17 @@
   "operateType":"group_rw_group_ro",
   "folderName":"hello",
   "comment":"This is just a testing text.",
-  "folderPath":"/etc/tmp/hello",
-  "folderShowSwtich":"on",
-  "defaultUser":"admin",
-  "defaultGroup":"aaa",
-  "validUserList":
+  "Path":"/etc/tmp/hello",
+  "available":"on",
+  "force user":"admin",
+  "force group":"aaa",
+  "valid users":
   [
     "aaa",
     "bbb",
     "ccc"
   ],
-  "writeUserList":
+  "write list":
   [
     "aaa",
     "bbb",
