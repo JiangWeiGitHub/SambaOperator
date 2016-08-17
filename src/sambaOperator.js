@@ -1,6 +1,24 @@
 const fs = require('fs');
 
-let sambaConfigPath = "/etc/samba/smb_test.config"
+let sambaConfigPath = new String
+
+function checkNodeEnv()
+{
+  if(process.env.mode === 'test')
+  {
+    sambaConfigPath = "/etc/samba/smb_test.config"
+    return true
+  }
+  else if(process.env.mode === 'product')
+  {
+    sambaConfigPath = "/etc/samba/smb.config"
+    return true
+  }
+  else
+  {
+    return false
+  }
+}
 
 function defaultSambaConfig()
 {
@@ -287,6 +305,12 @@ function createSambaConfig(inputJson)
 
 function writeSambaConfig(inputJson)
 {
+  let checkEnv = checkNodeEnv()
+  if(checkEnv === false)
+  {
+    return false
+  }
+
   let sambaConfig = createSambaConfig(inputJson)
   if(sambaConfig === false)
   {
@@ -305,33 +329,6 @@ function writeSambaConfig(inputJson)
 
     return true
   }
-}
-
-let testSample =
-{
-  "workgroup":"WORKGROUP",
-  "netbios name":"NETBIOS",
-  "server string":"SERVERNAME",
-  "map to guest":"Bad User",
-  "operateType":"group_rw_group_ro",
-  "folderName":"hello",
-  "comment":"This is just a testing text.",
-  "path":"/etc/tmp/hello",
-  "available":"on",
-//  "force users":"admin",
-  "force group":"aaa",
-  "valid users":
-  [
-    "aaa",
-    "bbb",
-    "ccc"
-  ],
-  "write list":
-  [
-    "aaa",
-    "bbb",
-    "ccc"
-  ]
 }
 
 exports.defaultSambaConfig = defaultSambaConfig

@@ -10,6 +10,9 @@ describe('Test Write Samba Configure File Method', function() {
   let testSample = new Object
 
   beforeEach(function(){
+
+    process.env.mode = 'test'
+
     testSample =
     {
       "workgroup":"WORKGROUP",
@@ -80,5 +83,10 @@ describe('Test Write Samba Configure File Method', function() {
   it('Check \'createSambaConfig\' Function', function() {
     expect(createSambaConfig(testSample).indexOf('valid users = +aaa +bbb +ccc')).to.be.not.equal(-1)
     expect(createSambaConfig(testSample).indexOf('available = hello')).to.be.equal(-1)
+  });
+
+  it('Check \'writeSambaConfig\' Function', function() {
+    let tmpResult = createSambaConfig(testSample)
+    expect(writeSambaConfig(tmpResult)).to.be.ok
   });
 });
