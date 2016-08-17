@@ -6,6 +6,37 @@ let writeSambaConfig = require('../src/sambaOperator.js').writeSambaConfig
 let expect = require('chai').expect
 
 describe('Test Write Samba Configure File Method', function() {
+
+  let testSample = new Object
+
+  beforeEach(function(){
+    testSample =
+    {
+      "workgroup":"WORKGROUP",
+      "netbios name":"NETBIOS",
+      "server string":"SERVERNAME",
+      "map to guest":"Bad User",
+      "operateType":"world_rw_without_guest",
+      "folderName":"hello",
+      "comment":"This is just a testing text.",
+      "path":"/etc/tmp/hello",
+      "available":"on",
+      "force group":"aaa",
+      "valid users":
+      [
+        "aaa",
+        "bbb",
+        "ccc"
+      ],
+      "write list":
+      [
+        "aaa",
+        "bbb",
+        "ccc"
+      ]
+    }
+  })
+
   it('Check \'defaultSambaConfig\' Function', function() {
     let tmpData = defaultSambaConfig()
     expect(tmpData).to.include.keys('global')
@@ -39,34 +70,15 @@ describe('Test Write Samba Configure File Method', function() {
   })
 
   it('Check \'checkInputFormat\' Function', function() {
-
-    let testSample =
-    {
-      "workgroup":"WORKGROUP",
-      "netbios name":"NETBIOS",
-      "server string":"SERVERNAME",
-      "map to guest":"Bad User",
-      "operateType":"world_rw_without_guest",
-      "folderName":"hello",
-      "comment":"This is just a testing text.",
-      "path":"/etc/tmp/hello",
-      "available":"on",
-      "force group":"aaa",
-      "valid users":
-      [
-        "aaa",
-        "bbb",
-        "ccc"
-      ],
-      "write list":
-      [
-        "aaa",
-        "bbb",
-        "ccc"
-      ]
-    }
-
     expect(checkInputFormat(testSample)).to.be.ok
+    testSample['map to guest'] = false
+    expect(checkInputFormat(testSample)).to.not.be.ok
+    delete testSample['valid users']
+    expect(checkInputFormat(testSample)).to.not.be.ok
   });
 
+  it('Check \'createSambaConfig\' Function', function() {
+    expect(createSambaConfig(testSample).indexOf('valid users = +aaa +bbb +ccc')).to.be.not.equal(-1)
+    expect(createSambaConfig(testSample).indexOf('available = hello')).to.be.equal(-1)
+  });
 });
