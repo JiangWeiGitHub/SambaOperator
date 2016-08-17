@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs')
 
 let sambaConfigPath = new String
 
@@ -6,7 +6,7 @@ function checkNodeEnv()
 {
   if(process.env.mode === 'test')
   {
-    sambaConfigPath = "/etc/samba/smb_test.config"
+    sambaConfigPath = "./smb_test.config"
     return true
   }
   else if(process.env.mode === 'product')

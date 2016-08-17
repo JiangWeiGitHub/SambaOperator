@@ -86,7 +86,6 @@ describe('Test Write Samba Configure File Method', function() {
   });
 
   it('Check \'writeSambaConfig\' Function', function() {
-    let tmpResult = createSambaConfig(testSample)
-    expect(writeSambaConfig(tmpResult)).to.be.ok
+    expect(writeSambaConfig(testSample)).to.be.ok
   });
 });
