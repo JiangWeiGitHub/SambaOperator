@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-let sambaConfigPath = "/etc/samba/smb.config"
+let sambaConfigPath = "/etc/samba/smb_test.config"
 
 function defaultSambaConfig()
 {
@@ -67,9 +67,9 @@ function checkInputFormat(inputJson)
   }
 }
 
-function writeSambaConfig(inputJson)
+function createSambaConfig(inputJson)
 {
-  let tmpConfigStringTree = new String
+  let tmpConfigString = new String
 
   if (checkInputFormat(inputJson))
   {
@@ -83,23 +83,23 @@ function writeSambaConfig(inputJson)
     tmpGlobalConfig['server string'] = inputJson['server string']
     tmpGlobalConfig['map to guest'] = inputJson['map to guest']
 
-    tmpConfigStringTree = tmpConfigStringTree.concat("[global]\n")
+    tmpConfigString = tmpConfigString.concat("[global]\n")
     for (let prop in tmpGlobalConfig)
     {
-      tmpConfigStringTree = tmpConfigStringTree.concat(
+      tmpConfigString = tmpConfigString.concat(
       prop + " = " + tmpGlobalConfig[prop] + "\n")
     }
 
-    tmpConfigStringTree = tmpConfigStringTree.concat("\n[homes]\n")
+    tmpConfigString = tmpConfigString.concat("\n[homes]\n")
     for (let prop in tmpHomesConfig)
     {
-      tmpConfigStringTree = tmpConfigStringTree.concat(
+      tmpConfigString = tmpConfigString.concat(
       prop + " = " + tmpHomesConfig[prop] + "\n")
     }
 
     if(inputJson.operateType === "group_rw_group_ro")
     {
-      tmpConfigStringTree = tmpConfigStringTree.concat("\n[" + inputJson.folderName + "]\n")
+      tmpConfigString = tmpConfigString.concat("\n[" + inputJson.folderName + "]\n")
 
       tmpShareFolderConfig['comment'] = inputJson['comment']
       tmpShareFolderConfig['path'] = inputJson['path']
@@ -112,7 +112,7 @@ function writeSambaConfig(inputJson)
       {
         if(typeof(tmpShareFolderConfig[prop]) === 'string')
         {
-          tmpConfigStringTree = tmpConfigStringTree.concat(
+          tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpShareFolderConfig[prop] + "\n")
         }
         else if(typeof(tmpShareFolderConfig[prop]) === 'object')
@@ -124,14 +124,14 @@ function writeSambaConfig(inputJson)
             tmpString = tmpString.concat('+' + tmpShareFolderConfig[prop][subprop] + ' ')
           }
 
-          tmpConfigStringTree = tmpConfigStringTree.concat(
+          tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpString + "\n")
         }
       }
     }
     else if(inputJson.operateType === "group_rw_other_ro_with_guest")
     {
-      tmpConfigStringTree = tmpConfigStringTree.concat("\n[" + inputJson.folderName + "]\n")
+      tmpConfigString = tmpConfigString.concat("\n[" + inputJson.folderName + "]\n")
 
       tmpShareFolderConfig['comment'] = inputJson['comment']
       tmpShareFolderConfig['path'] = inputJson['path']
@@ -144,7 +144,7 @@ function writeSambaConfig(inputJson)
       {
         if(typeof(tmpShareFolderConfig[prop]) === 'string')
         {
-          tmpConfigStringTree = tmpConfigStringTree.concat(
+          tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpShareFolderConfig[prop] + "\n")
         }
         else if(typeof(tmpShareFolderConfig[prop]) === 'object')
@@ -156,18 +156,18 @@ function writeSambaConfig(inputJson)
             tmpString = tmpString.concat('+' + tmpShareFolderConfig[prop][subprop] + ' ')
           }
 
-          tmpConfigStringTree = tmpConfigStringTree.concat(
+          tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpString + "\n")
         }
       }
 
       // Special parameters
-      tmpConfigStringTree = tmpConfigStringTree.concat("read only = no\n")
-      tmpConfigStringTree = tmpConfigStringTree.concat("guest ok = yes\n")
+      tmpConfigString = tmpConfigString.concat("read only = no\n")
+      tmpConfigString = tmpConfigString.concat("guest ok = yes\n")
     }
     else if(inputJson.operateType === "group_rw_other_ro_without_guest")
     {
-      tmpConfigStringTree = tmpConfigStringTree.concat("\n[" + inputJson.folderName + "]\n")
+      tmpConfigString = tmpConfigString.concat("\n[" + inputJson.folderName + "]\n")
 
       tmpShareFolderConfig['comment'] = inputJson['comment']
       tmpShareFolderConfig['path'] = inputJson['path']
@@ -180,7 +180,7 @@ function writeSambaConfig(inputJson)
       {
         if(typeof(tmpShareFolderConfig[prop]) === 'string')
         {
-          tmpConfigStringTree = tmpConfigStringTree.concat(
+          tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpShareFolderConfig[prop] + "\n")
         }
         else if(typeof(tmpShareFolderConfig[prop]) === 'object')
@@ -192,17 +192,17 @@ function writeSambaConfig(inputJson)
             tmpString = tmpString.concat('+' + tmpShareFolderConfig[prop][subprop] + ' ')
           }
 
-          tmpConfigStringTree = tmpConfigStringTree.concat(
+          tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpString + "\n")
         }
       }
 
       // Special operate
-      tmpShareFolderConfig['valid users'] = "+users"
+      tmpConfigString = tmpConfigString.concat("valid users = +users\n")
     }
     else if(inputJson.operateType === "world_rw_with_guest")
     {
-      tmpConfigStringTree = tmpConfigStringTree.concat("\n[" + inputJson.folderName + "]\n")
+      tmpConfigString = tmpConfigString.concat("\n[" + inputJson.folderName + "]\n")
 
       tmpShareFolderConfig['comment'] = inputJson['comment']
       tmpShareFolderConfig['path'] = inputJson['path']
@@ -215,7 +215,7 @@ function writeSambaConfig(inputJson)
       {
         if(typeof(tmpShareFolderConfig[prop]) === 'string')
         {
-          tmpConfigStringTree = tmpConfigStringTree.concat(
+          tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpShareFolderConfig[prop] + "\n")
         }
         else if(typeof(tmpShareFolderConfig[prop]) === 'object')
@@ -227,18 +227,18 @@ function writeSambaConfig(inputJson)
             tmpString = tmpString.concat('+' + tmpShareFolderConfig[prop][subprop] + ' ')
           }
 
-          tmpConfigStringTree = tmpConfigStringTree.concat(
+          tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpString + "\n")
         }
       }
 
       // Special parameters
-      tmpConfigStringTree = tmpConfigStringTree.concat("read only = no\n")
-      tmpConfigStringTree = tmpConfigStringTree.concat("guest ok = yes\n")
+      tmpConfigString = tmpConfigString.concat("read only = no\n")
+      tmpConfigString = tmpConfigString.concat("guest ok = yes\n")
     }
     else if(inputJson.operateType === "world_rw_without_guest")
     {
-      tmpConfigStringTree = tmpConfigStringTree.concat("\n[" + inputJson.folderName + "]\n")
+      tmpConfigString = tmpConfigString.concat("\n[" + inputJson.folderName + "]\n")
 
       tmpShareFolderConfig['comment'] = inputJson['comment']
       tmpShareFolderConfig['path'] = inputJson['path']
@@ -251,7 +251,7 @@ function writeSambaConfig(inputJson)
       {
         if(typeof(tmpShareFolderConfig[prop]) === 'string')
         {
-          tmpConfigStringTree = tmpConfigStringTree.concat(
+          tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpShareFolderConfig[prop] + "\n")
         }
         else if(typeof(tmpShareFolderConfig[prop]) === 'object')
@@ -263,25 +263,47 @@ function writeSambaConfig(inputJson)
             tmpString = tmpString.concat('+' + tmpShareFolderConfig[prop][subprop] + ' ')
           }
 
-          tmpConfigStringTree = tmpConfigStringTree.concat(
+          tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpString + "\n")
         }
       }
 
       // Special operate
-      tmpShareFolderConfig['write list'] = "+users"
+      tmpConfigString = tmpConfigString.concat("write list = +users\n")
     }
     else
     {
       return false
     }
 
-console.log(tmpConfigStringTree)
+  return tmpConfigString
 
   }
   else
   {
     return false
+  }
+}
+
+function writeSambaConfig(inputJson)
+{
+  let sambaConfig = createSambaConfig(inputJson)
+  if(sambaConfig === false)
+  {
+    return false
+  }
+  else
+  {
+    try
+    {
+      fs.writeFileSync(sambaConfigPath, sambaConfig, 'utf8')
+    }
+    catch(e)
+    {
+      return false
+    }
+
+    return true
   }
 }
 
@@ -312,9 +334,4 @@ let testSample =
   ]
 }
 
-writeSambaConfig(testSample)
-
-//export
-//{
-//  writeSambaConfig
-//}
+exports.writeSambaConfig = writeSambaConfig
