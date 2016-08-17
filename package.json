@@ -1,0 +1,24 @@
+{
+  "name": "sambaoperator",
+  "version": "1.0.0",
+  "description": "Operating /etc/samba/smb.conf",
+  "main": "sambaOperator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JiangWeiGitHub/SambaOperator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JiangWeiGitHub/SambaOperator/issues"
+  },
+  "homepage": "https://github.com/JiangWeiGitHub/SambaOperator#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.4",
+    "mocha": "^3.0.2"
+  }
+}
