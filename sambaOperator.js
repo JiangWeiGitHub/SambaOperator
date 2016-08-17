@@ -307,31 +307,4 @@ function writeSambaConfig(inputJson)
   }
 }
 
-let testSample =
-{
-  "workgroup":"WORKGROUP",
-  "netbios name":"NETBIOS",
-  "server string":"SERVERNAME",
-  "map to guest":"Bad User",
-  "operateType":"group_rw_group_ro",
-  "folderName":"hello",
-  "comment":"This is just a testing text.",
-  "path":"/etc/tmp/hello",
-  "available":"on",
-//  "force users":"admin",
-  "force group":"aaa",
-  "valid users":
-  [
-    "aaa",
-    "bbb",
-    "ccc"
-  ],
-  "write list":
-  [
-    "aaa",
-    "bbb",
-    "ccc"
-  ]
-}
-
 exports.writeSambaConfig = writeSambaConfig
