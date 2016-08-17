@@ -1,7 +1,7 @@
-let defaultSambaConfig = require('../sambaOperator.js').defaultSambaConfig
-let checkInputFormat = require('../sambaOperator.js').checkInputFormat
-let createSambaConfig = require('../sambaOperator.js').createSambaConfig
-let writeSambaConfig = require('../sambaOperator.js').writeSambaConfig
+let defaultSambaConfig = require('../src/sambaOperator.js').defaultSambaConfig
+let checkInputFormat = require('../src/sambaOperator.js').checkInputFormat
+let createSambaConfig = require('../src/sambaOperator.js').createSambaConfig
+let writeSambaConfig = require('../src/sambaOperator.js').writeSambaConfig
 
 let expect = require('chai').expect
 
