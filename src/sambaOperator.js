@@ -334,7 +334,6 @@ let testSample =
   ]
 }
 
-exports.writeSambaConfig = writeSambaConfig
 exports.defaultSambaConfig = defaultSambaConfig
 exports.checkInputFormat = checkInputFormat
 exports.createSambaConfig = createSambaConfig
