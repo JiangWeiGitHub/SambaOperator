@@ -1,6 +1,7 @@
 let defaultSambaConfig = require('../sambaOperator.js').defaultSambaConfig
 let checkInputFormat = require('../sambaOperator.js').checkInputFormat
-
+let createSambaConfig = require('../sambaOperator.js').createSambaConfig
+let writeSambaConfig = require('../sambaOperator.js').writeSambaConfig
 
 let expect = require('chai').expect
 
@@ -39,31 +40,31 @@ describe('Test Write Samba Configure File Method', function() {
 
   it('Check \'checkInputFormat\' Function', function() {
 
-let testSample =
-{
-  "workgroup":"WORKGROUP",
-  "netbios name":"NETBIOS",
-  "server string":"SERVERNAME",
-  "map to guest":"Bad User",
-  "operateType":"world_rw_without_guest",
-  "folderName":"hello",
-  "comment":"This is just a testing text.",
-  "path":"/etc/tmp/hello",
-  "available":"on",
-  "force group":"aaa",
-  "valid users":
-  [
-    "aaa",
-    "bbb",
-    "ccc"
-  ],
-  "write list":
-  [
-    "aaa",
-    "bbb",
-    "ccc"
-  ]
-}
+    let testSample =
+    {
+      "workgroup":"WORKGROUP",
+      "netbios name":"NETBIOS",
+      "server string":"SERVERNAME",
+      "map to guest":"Bad User",
+      "operateType":"world_rw_without_guest",
+      "folderName":"hello",
+      "comment":"This is just a testing text.",
+      "path":"/etc/tmp/hello",
+      "available":"on",
+      "force group":"aaa",
+      "valid users":
+      [
+        "aaa",
+        "bbb",
+        "ccc"
+      ],
+      "write list":
+      [
+        "aaa",
+        "bbb",
+        "ccc"
+      ]
+    }
 
     expect(checkInputFormat(testSample)).to.be.ok
   });
