@@ -1,3 +1,8 @@
+const fs = require('fs')
+
+let setSambaConfigPath = require('../src/sambaOperator.js').setSambaConfigPath
+let getSambaConfigPath = require('../src/sambaOperator.js').getSambaConfigPath
+let checkNodeEnv = require('../src/sambaOperator.js').checkNodeEnv
 let defaultSambaConfig = require('../src/sambaOperator.js').defaultSambaConfig
 let checkInputFormat = require('../src/sambaOperator.js').checkInputFormat
 let createSambaConfig = require('../src/sambaOperator.js').createSambaConfig
@@ -40,6 +45,30 @@ describe('Test Write Samba Configure File Method', function() {
     }
   })
 
+  it('Check \'setSambaConfigPath\' Function', function() {
+    expect(setSambaConfigPath('/home/test/haha.txt')).to.be.ok
+    expect(setSambaConfigPath('asfsdfsdf')).to.be.ok
+    expect(setSambaConfigPath('')).to.be.not.ok
+  })
+
+  it('Check \'getSambaConfigPath\' Function', function() {
+    setSambaConfigPath('/home/test/haha.txt')
+    expect(getSambaConfigPath()).to.be.equal('/home/test/haha.txt')
+    setSambaConfigPath('./smb_test.config')
+    expect(getSambaConfigPath()).to.be.not.equal('/home/test/haha.txt')
+  })
+
+  it('Check \'checkNodeEnv\' Function', function() {
+    process.env.mode = 'test'
+    expect(checkNodeEnv()).to.be.ok
+
+    process.env.mode = 'product'
+    expect(checkNodeEnv()).to.be.ok
+
+    process.env.mode = 'what'
+    expect(checkNodeEnv()).to.not.be.ok
+  })
+
   it('Check \'defaultSambaConfig\' Function', function() {
     let tmpData = defaultSambaConfig()
     expect(tmpData).to.include.keys('global')
@@ -78,14 +107,24 @@ describe('Test Write Samba Configure File Method', function() {
     expect(checkInputFormat(testSample)).to.not.be.ok
     delete testSample['valid users']
     expect(checkInputFormat(testSample)).to.not.be.ok
-  });
+  })
 
   it('Check \'createSambaConfig\' Function', function() {
     expect(createSambaConfig(testSample).indexOf('valid users = +aaa +bbb +ccc')).to.be.not.equal(-1)
     expect(createSambaConfig(testSample).indexOf('available = hello')).to.be.equal(-1)
-  });
+  })
 
   it('Check \'writeSambaConfig\' Function', function() {
+    try
+    {
+      fs.accessSync('./smb_test.config', fs.constants.F_OK)
+      fs.unlinkSync('./smb_test.config')
+    }
+    catch(e)
+    {
+      // console.log("File does not exist!")
+    }
+
     expect(writeSambaConfig(testSample)).to.be.ok
-  });
-});
+  })
+})

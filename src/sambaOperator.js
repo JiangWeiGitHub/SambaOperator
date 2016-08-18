@@ -1,18 +1,56 @@
 const fs = require('fs')
+const path = require('path')
 
 let sambaConfigPath = new String
+
+function setSambaConfigPath(inputPath)
+{
+  if(path.parse(inputPath) === 'undefined'
+  || path.parse(inputPath).name === '')
+  {
+    return false
+  }
+
+  sambaConfigPath = inputPath
+  return true
+}
+
+function getSambaConfigPath()
+{
+  if(sambaConfigPath === 'undefined'
+  || sambaConfigPath === '')
+  {
+    return false
+  }
+
+  return sambaConfigPath
+}
 
 function checkNodeEnv()
 {
   if(process.env.mode === 'test')
   {
-    sambaConfigPath = "./smb_test.config"
-    return true
+    let tmpResult = setSambaConfigPath("./smb_test.config")
+    if(tmpResult === true)
+    {
+      return true
+    }
+    else
+    {
+      return false
+    }
   }
   else if(process.env.mode === 'product')
   {
-    sambaConfigPath = "/etc/samba/smb.config"
-    return true
+    let tmpResult = setSambaConfigPath("/etc/samba/smb.config")
+    if(tmpResult === true)
+    {
+      return true
+    }
+    else
+    {
+      return false
+    }
   }
   else
   {
@@ -331,6 +369,9 @@ function writeSambaConfig(inputJson)
   }
 }
 
+exports.setSambaConfigPath = setSambaConfigPath
+exports.getSambaConfigPath = getSambaConfigPath
+exports.checkNodeEnv = checkNodeEnv
 exports.defaultSambaConfig = defaultSambaConfig
 exports.checkInputFormat = checkInputFormat
 exports.createSambaConfig = createSambaConfig
