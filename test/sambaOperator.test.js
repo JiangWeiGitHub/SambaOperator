@@ -179,10 +179,90 @@ describe('Check \'createSambaConfig\' Function', function() {
     }
   })
 
-  it('Should get \'false\' if \'inputJson\'\'s format is invalid', function() {
-    testSample['workgroup'] = {'key':'value'}
-    expect(testEntity.checkInputFormat(testSample)).to.be.not.ok
+  it('Should get \'true\' if \'inputJson\'\'s \'operateType\' is \'group_rw_group_ro\'', function() {
+    testSample['operateType'] = 'group_rw_group_ro'
+    expect(testEntity.createSambaConfig(testSample)).to.be.ok
   })
 
+  it('Should get \'true\' if \'inputJson\'\'s \'operateType\' is \'group_rw_other_ro_with_guest\'', function() {
+    testSample['operateType'] = 'group_rw_other_ro_with_guest'
+    expect(testEntity.createSambaConfig(testSample)).to.be.ok
+  })
 
+  it('Should get \'true\' if \'inputJson\'\'s \'operateType\' is \'group_rw_other_ro_without_guest\'', function() {
+    testSample['operateType'] = 'group_rw_other_ro_without_guest'
+    expect(testEntity.createSambaConfig(testSample)).to.be.ok
+  })
+
+  it('Should get \'true\' if \'inputJson\'\'s \'operateType\' is \'world_rw_with_guest\'', function() {
+    testSample['operateType'] = 'world_rw_with_guest'
+    expect(testEntity.createSambaConfig(testSample)).to.be.ok
+  })
+
+  it('Should get \'true\' if \'inputJson\'\'s \'operateType\' is \'world_rw_without_guest\'', function() {
+    testSample['operateType'] = 'world_rw_without_guest'
+    expect(testEntity.createSambaConfig(testSample)).to.be.ok
+  })
+
+  it('Should get \'false\' if \'inputJson\'\'s \'operateType\' is \'abc\'', function() {
+    testSample['operateType'] = 'abc'
+    expect(testEntity.createSambaConfig(testSample)).to.be.not.ok
+  })
+
+  it('Should get \'false\' if \'inputJson\'\'s format is invalid', function() {
+    testSample['operateType'] = undefined
+    expect(testEntity.createSambaConfig(testSample)).to.be.not.ok
+  })
+})
+
+describe('Check \'writeSambaConfig\' Function', function() {
+
+  beforeEach( function() {
+
+    process.env.mode = 'test'
+
+    testSample =
+    {
+      "workgroup":"WORKGROUP",
+      "netbios name":"NETBIOS",
+      "server string":"SERVERNAME",
+      "map to guest":"Bad User",
+      "operateType":"world_rw_without_guest",
+      "folderName":"hello",
+      "comment":"This is just a testing text.",
+      "path":"/etc/tmp/hello",
+      "available":"on",
+      "force group":"aaa",
+      "valid users":
+      [
+        "aaa",
+        "bbb",
+        "ccc"
+      ],
+      "write list":
+      [
+        "aaa",
+        "bbb",
+        "ccc"
+      ]
+    }
+  })
+
+  it('Should get \'false\' if \'inputJson\'\'s format is invalid', function() {
+    testSample['operateType'] = undefined
+    expect(testEntity.writeSambaConfig(testSample)).to.be.not.ok
+  })
+
+  it('Should get \'true\' if \'inputJson\'\'s format is valid', function() {
+    expect(testEntity.writeSambaConfig(testSample)).to.be.ok
+  })
+
+  it('Should get \'false\' if \'process.env.mode\'\'s format is invalid', function() {
+    process.env.mode = undefined
+    expect(testEntity.writeSambaConfig(testSample)).to.be.not.ok
+  })
+
+  it('Should get \'true\' if \'process.env.mode\'\'s format is valid', function() {
+    expect(testEntity.writeSambaConfig(testSample)).to.be.ok
+  })
 })
