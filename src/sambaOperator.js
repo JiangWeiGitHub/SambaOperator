@@ -3,16 +3,25 @@ const path = require('path')
 
 let sambaConfigPath = new String
 
+let error = new Error('Nodejs\'s internal function runs error.');
+
 function setSambaConfigPath(inputPath)
 {
-  if(path.parse(inputPath) === 'undefined'
-  || path.parse(inputPath).name === '')
+  try
   {
-    return false
-  }
+    if(path.parse(inputPath) === 'undefined'
+    || path.parse(inputPath).name === '')
+    {
+      return false
+    }
 
-  sambaConfigPath = inputPath
-  return true
+    sambaConfigPath = inputPath
+    return true
+  }
+  catch(e)
+  {
+    throw error
+  }
 }
 
 function getSambaConfigPath()
@@ -362,13 +371,14 @@ function writeSambaConfig(inputJson)
     }
     catch(e)
     {
-      return false
+      throw error
     }
 
     return true
   }
 }
 
+exports.error= error
 exports.setSambaConfigPath = setSambaConfigPath
 exports.getSambaConfigPath = getSambaConfigPath
 exports.checkNodeEnv = checkNodeEnv
