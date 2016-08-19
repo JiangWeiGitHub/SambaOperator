@@ -1,23 +1,117 @@
 const fs = require('fs')
 
-let setSambaConfigPath = require('../src/sambaOperator.js').setSambaConfigPath
-let getSambaConfigPath = require('../src/sambaOperator.js').getSambaConfigPath
-let checkNodeEnv = require('../src/sambaOperator.js').checkNodeEnv
-let defaultSambaConfig = require('../src/sambaOperator.js').defaultSambaConfig
-let checkInputFormat = require('../src/sambaOperator.js').checkInputFormat
-let createSambaConfig = require('../src/sambaOperator.js').createSambaConfig
-let writeSambaConfig = require('../src/sambaOperator.js').writeSambaConfig
+let testEntity = require('../src/sambaOperator')
 
 let expect = require('chai').expect
 
-describe('Test Write Samba Configure File Method', function() {
-
-  let testSample = new Object
+describe('Check \'setSambaConfigPath\' Function', function() {
 
   beforeEach(function(){
+    testEntity.sambaConfigPath.value = ''
+  })
 
+  it('Should return \'undefined\' if the given path\'s format is vailid', function() {
+    expect(testEntity.setSambaConfigPath('/home/test/haha.txt')).to.be.eql(undefined)
+  })
+
+  it('Should return \'undefined\' if the given path\'s format is \'undefined\'', function() {
+    expect(testEntity.setSambaConfigPath(undefined)).to.be.eql(undefined)
+  })
+
+  it('Should return \'undefined\' if the given path\'s format is \'\'', function() {
+    expect(testEntity.setSambaConfigPath('')).to.be.eql(undefined)
+  })
+
+  it('\'sambaConfigPath.value\' would be \'./haha.txt\' if the given path is \'./haha.txt\'', function() {
+    testEntity.setSambaConfigPath('./haha.txt')
+    expect(testEntity.sambaConfigPath.value).to.be.eql('./haha.txt')
+  })
+
+  it('\'sambaConfigPath.value\' would be \'undefined\' if the given path is \'undefined\'', function() {
+    testEntity.setSambaConfigPath(undefined)
+    expect(testEntity.sambaConfigPath.value).to.be.eql(undefined)
+  })
+
+  it('\'sambaConfigPath.value\' would be \'\' if the given path is \'\'', function() {
+    testEntity.setSambaConfigPath('')
+    expect(testEntity.sambaConfigPath.value).to.be.eql('')
+  })
+})
+
+describe('Check \'getSambaConfigPath\' Function', function() {
+
+  beforeEach(function(){
+    testEntity.sambaConfigPath.value = ''
+  })
+
+  it('Should get \'/home/test/smb.conf\' if the given path is \'/home/test/smb.conf\'', function() {
+    testEntity.sambaConfigPath.value = '/home/test/smb.conf'
+    expect(testEntity.getSambaConfigPath()).to.be.eql('/home/test/smb.conf')
+  })
+
+  it('Should get \'\' if the given path is \'\'', function() {
+    testEntity.sambaConfigPath.value = ''
+    expect(testEntity.getSambaConfigPath()).to.be.eql('')
+  })
+
+  it('Should get \'undefined\' if the given path is \'undefined\'', function() {
+    testEntity.sambaConfigPath.value = undefined
+    expect(testEntity.getSambaConfigPath()).to.be.eql(undefined)
+  })
+})
+
+describe('Check \'checkNodeEnv\' Function', function() {
+
+  beforeEach(function(){
+    process.env.mode = ''
+  })
+
+  it('Should get \'false\' if the \'process.env.mode\' is \'\'', function() {
+    process.env.mode = ''
+    expect(testEntity.checkNodeEnv()).to.be.not.ok
+  })
+
+  it('Should get \'undefined\' if the \'process.env.mode\' is \'test\'', function() {
     process.env.mode = 'test'
+    expect(testEntity.checkNodeEnv()).to.be.eql(undefined)
+  })
 
+  it('Should get \'undefined\' if the \'process.env.mode\' is \'product\'', function() {
+    process.env.mode = 'product'
+    expect(testEntity.checkNodeEnv()).to.be.eql(undefined)
+  })
+
+  it('\'sambaConfigPath.value\' should be \'./smb_test.config\' if the \'process.env.mode\' is \'test\'', function() {
+    process.env.mode = 'test'
+    testEntity.checkNodeEnv()
+    expect(testEntity.getSambaConfigPath()).to.be.eql('./smb_test.config')
+  })
+
+  it('\'sambaConfigPath.value\' should be \'/etc/samba/smb.config\' if the \'process.env.mode\' is \'product\'', function() {
+    process.env.mode = 'product'
+    testEntity.checkNodeEnv()
+    expect(testEntity.getSambaConfigPath()).to.be.eql('/etc/samba/smb.config')
+  })
+})
+
+describe('Check \'defaultSambaConfig\' Function', function() {
+
+  it('Should get \'defaultSambaConfig\' object', function() {
+    expect(testEntity.defaultSambaConfig()['global']['dns proxy']).to.be.eql('no')
+    expect(testEntity.defaultSambaConfig()['global']['log file']).to.be.eql('/var/log/samba/log.%m')
+    expect(testEntity.defaultSambaConfig()['global']['public']).to.be.eql('yes')
+
+    expect(testEntity.defaultSambaConfig()['homesFolder']['comment']).to.be.eql('Home Directory')
+    expect(testEntity.defaultSambaConfig()['homesFolder']['valid users']).to.be.eql('%S')
+
+    expect(testEntity.defaultSambaConfig()['shareFolder']['force user']).to.be.eql('admin')
+    expect(testEntity.defaultSambaConfig()['shareFolder']['directory mask']).to.be.eql('0755')
+  })
+})
+
+describe('Check \'checkInputFormat\' Function', function() {
+
+  beforeEach( function() {
     testSample =
     {
       "workgroup":"WORKGROUP",
@@ -45,86 +139,50 @@ describe('Test Write Samba Configure File Method', function() {
     }
   })
 
-  it('Check \'setSambaConfigPath\' Function', function() {
-    expect(setSambaConfigPath('/home/test/haha.txt')).to.be.ok
-    expect(setSambaConfigPath('asfsdfsdf')).to.be.ok
-    expect(setSambaConfigPath('')).to.be.not.ok
+  it('Should get \'true\' if \'inputJson\'\'s format is valid', function() {
+    expect(testEntity.checkInputFormat(testSample)).to.be.ok
   })
 
-  it('Check \'getSambaConfigPath\' Function', function() {
-    setSambaConfigPath('/home/test/haha.txt')
-    expect(getSambaConfigPath()).to.be.equal('/home/test/haha.txt')
-    setSambaConfigPath('./smb_test.config')
-    expect(getSambaConfigPath()).to.be.not.equal('/home/test/haha.txt')
+  it('Should get \'false\' if \'inputJson\'\'s format is invalid', function() {
+    testSample['workgroup'] = {'key':'value'}
+    expect(testEntity.checkInputFormat(testSample)).to.be.not.ok
   })
+})
 
-  it('Check \'checkNodeEnv\' Function', function() {
-    process.env.mode = 'test'
-    expect(checkNodeEnv()).to.be.ok
+describe('Check \'createSambaConfig\' Function', function() {
 
-    process.env.mode = 'product'
-    expect(checkNodeEnv()).to.be.ok
-
-    process.env.mode = 'what'
-    expect(checkNodeEnv()).to.not.be.ok
-  })
-
-  it('Check \'defaultSambaConfig\' Function', function() {
-    let tmpData = defaultSambaConfig()
-    expect(tmpData).to.include.keys('global')
-    expect(tmpData.global).to.include.keys('dns proxy')
-    expect(tmpData.global).to.include.keys('log file')
-    expect(tmpData.global).to.include.keys('max log size')
-    expect(tmpData.global).to.include.keys('syslog')
-    expect(tmpData.global).to.include.keys('server role')
-    expect(tmpData.global).to.include.keys('panic action');
-    expect(tmpData.global).to.include.keys('passdb backend')
-    expect(tmpData.global).to.include.keys('obey pam restrictions')
-    expect(tmpData.global).to.include.keys('unix password sync')
-    expect(tmpData.global).to.include.keys('passwd program')
-    expect(tmpData.global).to.include.keys('pam password change')
-    expect(tmpData.global).to.include.keys('security')
-    expect(tmpData.global).to.include.keys('guest account')
-    expect(tmpData.global).to.include.keys('public')
-
-    expect(tmpData).to.include.keys('homesFolder')
-    expect(tmpData.homesFolder).to.include.keys('comment')
-    expect(tmpData.homesFolder).to.include.keys('browseable')
-    expect(tmpData.homesFolder).to.include.keys('read only')
-    expect(tmpData.homesFolder).to.include.keys('create mask')
-    expect(tmpData.homesFolder).to.include.keys('directory mask')
-    expect(tmpData.homesFolder).to.include.keys('valid users')
-
-    expect(tmpData).to.include.keys('shareFolder')
-    expect(tmpData.shareFolder).to.include.keys('force user')
-    expect(tmpData.shareFolder).to.include.keys('create mask')
-    expect(tmpData.shareFolder).to.include.keys('directory mask')
-  })
-
-  it('Check \'checkInputFormat\' Function', function() {
-    expect(checkInputFormat(testSample)).to.be.ok
-    testSample['map to guest'] = false
-    expect(checkInputFormat(testSample)).to.not.be.ok
-    delete testSample['valid users']
-    expect(checkInputFormat(testSample)).to.not.be.ok
-  })
-
-  it('Check \'createSambaConfig\' Function', function() {
-    expect(createSambaConfig(testSample).indexOf('valid users = +aaa +bbb +ccc')).to.be.not.equal(-1)
-    expect(createSambaConfig(testSample).indexOf('available = hello')).to.be.equal(-1)
-  })
-
-  it('Check \'writeSambaConfig\' Function', function() {
-    try
+  beforeEach( function() {
+    testSample =
     {
-      fs.accessSync('./smb_test.config', fs.constants.F_OK)
-      fs.unlinkSync('./smb_test.config')
+      "workgroup":"WORKGROUP",
+      "netbios name":"NETBIOS",
+      "server string":"SERVERNAME",
+      "map to guest":"Bad User",
+      "operateType":"world_rw_without_guest",
+      "folderName":"hello",
+      "comment":"This is just a testing text.",
+      "path":"/etc/tmp/hello",
+      "available":"on",
+      "force group":"aaa",
+      "valid users":
+      [
+        "aaa",
+        "bbb",
+        "ccc"
+      ],
+      "write list":
+      [
+        "aaa",
+        "bbb",
+        "ccc"
+      ]
     }
-    catch(e)
-    {
-      // console.log("File does not exist!")
-    }
-
-    expect(writeSambaConfig(testSample)).to.be.ok
   })
+
+  it('Should get \'false\' if \'inputJson\'\'s format is invalid', function() {
+    testSample['workgroup'] = {'key':'value'}
+    expect(testEntity.checkInputFormat(testSample)).to.be.not.ok
+  })
+
+
 })

@@ -1,65 +1,33 @@
 const fs = require('fs')
-const path = require('path')
 
-let sambaConfigPath = new String
+let sambaConfigPath = {
+  value: ''
+}
 
-let error = new Error('Nodejs\'s internal function runs error.');
+let error = new Error('Write File Failed.');
 
 function setSambaConfigPath(inputPath)
 {
-  try
-  {
-    if(path.parse(inputPath) === 'undefined'
-    || path.parse(inputPath).name === '')
-    {
-      return false
-    }
-
-    sambaConfigPath = inputPath
-    return true
-  }
-  catch(e)
-  {
-    throw error
-  }
+  sambaConfigPath.value = inputPath
+  return
 }
 
 function getSambaConfigPath()
 {
-  if(sambaConfigPath === 'undefined'
-  || sambaConfigPath === '')
-  {
-    return false
-  }
-
-  return sambaConfigPath
+  return sambaConfigPath.value
 }
 
 function checkNodeEnv()
 {
   if(process.env.mode === 'test')
   {
-    let tmpResult = setSambaConfigPath("./smb_test.config")
-    if(tmpResult === true)
-    {
-      return true
-    }
-    else
-    {
-      return false
-    }
+    setSambaConfigPath("./smb_test.config")
+    return
   }
   else if(process.env.mode === 'product')
   {
-    let tmpResult = setSambaConfigPath("/etc/samba/smb.config")
-    if(tmpResult === true)
-    {
-      return true
-    }
-    else
-    {
-      return false
-    }
+    setSambaConfigPath("/etc/samba/smb.config")
+    return
   }
   else
   {
@@ -367,7 +335,7 @@ function writeSambaConfig(inputJson)
   {
     try
     {
-      fs.writeFileSync(sambaConfigPath, sambaConfig, 'utf8')
+      fs.writeFileSync(sambaConfigPath.value, sambaConfig, 'utf8')
     }
     catch(e)
     {
@@ -378,11 +346,15 @@ function writeSambaConfig(inputJson)
   }
 }
 
-exports.error= error
-exports.setSambaConfigPath = setSambaConfigPath
-exports.getSambaConfigPath = getSambaConfigPath
-exports.checkNodeEnv = checkNodeEnv
-exports.defaultSambaConfig = defaultSambaConfig
-exports.checkInputFormat = checkInputFormat
-exports.createSambaConfig = createSambaConfig
-exports.writeSambaConfig = writeSambaConfig
+module.exports =
+{
+  sambaConfigPath: sambaConfigPath,
+  error: error,
+  setSambaConfigPath: setSambaConfigPath,
+  getSambaConfigPath: getSambaConfigPath,
+  checkNodeEnv: checkNodeEnv,
+  defaultSambaConfig: defaultSambaConfig,
+  checkInputFormat: checkInputFormat,
+  createSambaConfig: createSambaConfig,
+  writeSambaConfig: writeSambaConfig
+}
