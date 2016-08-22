@@ -347,7 +347,6 @@ function writeSambaConfig(inputJson)
   }
 }
 
-
 module.exports =
 {
   sambaConfigPath: sambaConfigPath,
