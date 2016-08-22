@@ -76,6 +76,7 @@ function defaultSambaConfig()
   return defaultSambaConfig
 }
 
+
 function checkInputFormat(inputJson)
 {
   if(typeof(inputJson.workgroup) != 'string'
@@ -148,7 +149,7 @@ function createSambaConfig(inputJson)
           tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpShareFolderConfig[prop] + "\n")
         }
-        else if(typeof(tmpShareFolderConfig[prop]) === 'object')
+        else //if(typeof(tmpShareFolderConfig[prop]) === 'object')
         {
           let tmpString = new String
 
@@ -180,7 +181,7 @@ function createSambaConfig(inputJson)
           tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpShareFolderConfig[prop] + "\n")
         }
-        else if(typeof(tmpShareFolderConfig[prop]) === 'object')
+        else //if(typeof(tmpShareFolderConfig[prop]) === 'object')
         {
           let tmpString = new String
 
@@ -216,7 +217,7 @@ function createSambaConfig(inputJson)
           tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpShareFolderConfig[prop] + "\n")
         }
-        else if(typeof(tmpShareFolderConfig[prop]) === 'object')
+        else //if(typeof(tmpShareFolderConfig[prop]) === 'object')
         {
           let tmpString = new String
 
@@ -251,7 +252,7 @@ function createSambaConfig(inputJson)
           tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpShareFolderConfig[prop] + "\n")
         }
-        else if(typeof(tmpShareFolderConfig[prop]) === 'object')
+        else //if(typeof(tmpShareFolderConfig[prop]) === 'object')
         {
           let tmpString = new String
 
@@ -287,7 +288,7 @@ function createSambaConfig(inputJson)
           tmpConfigString = tmpConfigString.concat(
           prop + " = " + tmpShareFolderConfig[prop] + "\n")
         }
-        else if(typeof(tmpShareFolderConfig[prop]) === 'object')
+        else //if(typeof(tmpShareFolderConfig[prop]) === 'object')
         {
           let tmpString = new String
 
@@ -345,6 +346,7 @@ function writeSambaConfig(inputJson)
     return true
   }
 }
+
 
 module.exports =
 {

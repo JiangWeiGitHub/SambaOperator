@@ -154,6 +154,11 @@ describe('Check \'checkInputFormat\' Function', function() {
     expect(testEntity.checkInputFormat(testSample)).to.be.not.ok
   })
 
+  it('Should get \'false\' if \'inputJson\'\'s \'server string\'\'s content is number \'123456\'', function() {
+    testSample['server string'] = 123456
+    expect(testEntity.checkInputFormat(testSample)).to.be.not.ok
+  })
+
   it('Should get \'false\' if \'inputJson\'\'s \'valid users\'\'s content is \'123\'', function() {
     testSample['valid users'].pop()
     testSample['valid users'].pop()
@@ -166,6 +171,14 @@ describe('Check \'checkInputFormat\' Function', function() {
     testSample['valid users'].pop()
     testSample['valid users'].pop()
     expect(testEntity.checkInputFormat(testSample)).to.be.ok
+  })
+
+  it('Should get \'false\' if \'inputJson\'\'s \'write list\'\'s content is \'123\'', function() {
+    testSample['write list'].pop()
+    testSample['write list'].pop()
+    testSample['write list'].pop()
+    testSample['write list'] = 123
+    expect(testEntity.checkInputFormat(testSample)).to.be.not.ok
   })
 
   it('Should get \'true\' if \'inputJson\'\'s \'write list\'\'s content is \'aaa\'', function() {
