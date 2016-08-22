@@ -144,9 +144,34 @@ describe('Check \'checkInputFormat\' Function', function() {
     expect(testEntity.checkInputFormat(testSample)).to.be.ok
   })
 
-  it('Should get \'false\' if \'inputJson\'\'s format is invalid', function() {
+  it('Should get \'false\' if \'inputJson\'\'s \'workgroup\'\'s content is \'key\':\'value\'', function() {
     testSample['workgroup'] = {'key':'value'}
     expect(testEntity.checkInputFormat(testSample)).to.be.not.ok
+  })
+
+  it('Should get \'false\' if \'inputJson\'\'s \'netbios name\'\'s content is \'key\':\'value\'', function() {
+    testSample['netbios name'] = {'key':'value'}
+    expect(testEntity.checkInputFormat(testSample)).to.be.not.ok
+  })
+
+  it('Should get \'false\' if \'inputJson\'\'s \'valid users\'\'s content is \'123\'', function() {
+    testSample['valid users'].pop()
+    testSample['valid users'].pop()
+    testSample['valid users'].pop()
+    testSample['valid users'] = 123
+    expect(testEntity.checkInputFormat(testSample)).to.be.not.ok
+  })
+
+  it('Should get \'true\' if \'inputJson\'\'s \'valid users\'\'s content is \'aaa\'', function() {
+    testSample['valid users'].pop()
+    testSample['valid users'].pop()
+    expect(testEntity.checkInputFormat(testSample)).to.be.ok
+  })
+
+  it('Should get \'true\' if \'inputJson\'\'s \'write list\'\'s content is \'aaa\'', function() {
+    testSample['write list'].pop()
+    testSample['write list'].pop()
+    expect(testEntity.checkInputFormat(testSample)).to.be.ok
   })
 })
 
@@ -190,9 +215,20 @@ describe('Check \'createSambaConfig\' Function', function() {
     expect(testEntity.createSambaConfig(testSample)).to.be.ok
   })
 
+  it('Should get \'read only = no & guest ok = yes\' if \'inputJson\'\'s \'operateType\' is \'group_rw_other_ro_with_guest\'', function() {
+    testSample['operateType'] = 'group_rw_other_ro_with_guest'
+    expect(testEntity.createSambaConfig(testSample).indexOf('read only = no')).to.be.not.eql(-1)
+    expect(testEntity.createSambaConfig(testSample).indexOf('guest ok = yes')).to.be.not.eql(-1)
+  })
+
   it('Should get \'true\' if \'inputJson\'\'s \'operateType\' is \'group_rw_other_ro_without_guest\'', function() {
     testSample['operateType'] = 'group_rw_other_ro_without_guest'
     expect(testEntity.createSambaConfig(testSample)).to.be.ok
+  })
+
+  it('Should get \'valid users = +users\' if \'inputJson\'\'s \'operateType\' is \'group_rw_other_ro_without_guest\'', function() {
+    testSample['operateType'] = 'group_rw_other_ro_without_guest'
+    expect(testEntity.createSambaConfig(testSample).indexOf('valid users = +users')).to.be.not.eql(-1)
   })
 
   it('Should get \'true\' if \'inputJson\'\'s \'operateType\' is \'world_rw_with_guest\'', function() {
@@ -200,9 +236,20 @@ describe('Check \'createSambaConfig\' Function', function() {
     expect(testEntity.createSambaConfig(testSample)).to.be.ok
   })
 
+  it('Should get \'read only = no & guest ok = yes\' if \'inputJson\'\'s \'operateType\' is \'world_rw_with_guest\'', function() {
+    testSample['operateType'] = 'world_rw_with_guest'
+    expect(testEntity.createSambaConfig(testSample).indexOf('read only = no')).to.be.not.eql(-1)
+    expect(testEntity.createSambaConfig(testSample).indexOf('guest ok = yes')).to.be.not.eql(-1)
+  })
+
   it('Should get \'true\' if \'inputJson\'\'s \'operateType\' is \'world_rw_without_guest\'', function() {
     testSample['operateType'] = 'world_rw_without_guest'
     expect(testEntity.createSambaConfig(testSample)).to.be.ok
+  })
+
+  it('Should get \'write list = +users\' if \'inputJson\'\'s \'operateType\' is \'world_rw_without_guest\'', function() {
+    testSample['operateType'] = 'world_rw_without_guest'
+    expect(testEntity.createSambaConfig(testSample).indexOf('write list = +users')).to.be.not.eql(-1)
   })
 
   it('Should get \'false\' if \'inputJson\'\'s \'operateType\' is \'abc\'', function() {
@@ -274,34 +321,6 @@ describe('Check \'writeSambaConfig\' Function', function() {
   })
 
   it('Should get throw error if stub \'writeFileSync\' function with throw error', function() {
-
-    process.env.mode = 'test'
-
-    testSample =
-    {
-      "workgroup":"WORKGROUP",
-      "netbios name":"NETBIOS",
-      "server string":"SERVERNAME",
-      "map to guest":"Bad User",
-      "operateType":"world_rw_without_guest",
-      "folderName":"hello",
-      "comment":"This is just a testing text.",
-      "path":"/etc/tmp/hello",
-      "available":"on",
-      "force group":"aaa",
-      "valid users":
-      [
-        "aaa",
-        "bbb",
-        "ccc"
-      ],
-      "write list":
-      [
-        "aaa",
-        "bbb",
-        "ccc"
-      ]
-    }
 
     let write = sinon.stub(fs, 'writeFileSync', function(){
       throw testEntity.error

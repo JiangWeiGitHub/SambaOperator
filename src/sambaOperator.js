@@ -309,7 +309,7 @@ function createSambaConfig(inputJson)
       return false
     }
 
-  return tmpConfigString
+    return tmpConfigString
 
   }
   else
