@@ -337,7 +337,7 @@ function writeSambaConfig(inputJson)
     {
       fs.writeFileSync(sambaConfigPath.value, sambaConfig, 'utf8')
     }
-    catch(e)
+    catch(err)
     {
       throw error
     }

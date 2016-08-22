@@ -3,6 +3,7 @@ const fs = require('fs')
 let testEntity = require('../src/sambaOperator')
 
 let expect = require('chai').expect
+let sinon = require('sinon')
 
 describe('Check \'setSambaConfigPath\' Function', function() {
 
@@ -213,6 +214,12 @@ describe('Check \'createSambaConfig\' Function', function() {
     testSample['operateType'] = undefined
     expect(testEntity.createSambaConfig(testSample)).to.be.not.ok
   })
+
+  it('Should get \'true\' if \'inputJson\'\'s \'valid users\' is \'string\'', function() {
+    testSample['valid users'].pop()
+    testSample['valid users'].pop()
+    expect(testEntity.createSambaConfig(testSample)).to.be.ok
+  })
 })
 
 describe('Check \'writeSambaConfig\' Function', function() {
@@ -264,5 +271,44 @@ describe('Check \'writeSambaConfig\' Function', function() {
 
   it('Should get \'true\' if \'process.env.mode\'\'s format is valid', function() {
     expect(testEntity.writeSambaConfig(testSample)).to.be.ok
+  })
+
+  it('Should get throw error if stub \'writeFileSync\' function with throw error', function() {
+
+    process.env.mode = 'test'
+
+    testSample =
+    {
+      "workgroup":"WORKGROUP",
+      "netbios name":"NETBIOS",
+      "server string":"SERVERNAME",
+      "map to guest":"Bad User",
+      "operateType":"world_rw_without_guest",
+      "folderName":"hello",
+      "comment":"This is just a testing text.",
+      "path":"/etc/tmp/hello",
+      "available":"on",
+      "force group":"aaa",
+      "valid users":
+      [
+        "aaa",
+        "bbb",
+        "ccc"
+      ],
+      "write list":
+      [
+        "aaa",
+        "bbb",
+        "ccc"
+      ]
+    }
+
+    let write = sinon.stub(fs, 'writeFileSync', function(){
+      throw testEntity.error
+    })
+
+    expect(function(){testEntity.writeSambaConfig(testSample)}).to.throw(testEntity.error)
+
+    fs.writeFileSync.restore()
   })
 })
